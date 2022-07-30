@@ -11,6 +11,7 @@ import {
 } from './styles';
 
 import { Card } from '../../components/Card';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface Props {
     value: string;
@@ -26,15 +27,15 @@ export function AllNotes() {
             const response = await AsyncStorage.getItem(dataKey);
             const notesUpdated = response ? JSON.parse(response) : [];
             setNotes(notesUpdated)
-            console.log(notesUpdated, 'todas as notas');
+
         } catch (error) {
             console.log(error);
             Alert.alert('Não foi possível carregar as anotações');
         }
     }
 
-    function handleOpenCard() {
-        return 
+    function handleOpenCard(card : string) {
+        navigation.navigate("Anotacao", {params: card})
     }
 
     useFocusEffect(useCallback(() => {
@@ -49,7 +50,6 @@ export function AllNotes() {
     //     removeAll();
     // },[]))
 
-    console.log(notes, 'vida')
 
     return (
         <Container>
@@ -57,12 +57,15 @@ export function AllNotes() {
             <Header>
                 <Title>Anotações</Title>
             </Header>
-
-            <CardList
-                data={notes}
-                renderItem={({ item }: any) => <Card data={item} onPress={handleOpenCard}/>}
-                />
-
+            <ScrollView>
+                <CardList>
+                    { notes && notes.length && notes.map(item => (
+                        <>
+                        <Card data={item} onPress={() => handleOpenCard(item)} key={item} />
+                        </>
+                    ))}
+                </CardList>
+                </ScrollView>
 
         </Container>
     )

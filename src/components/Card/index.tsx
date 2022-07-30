@@ -8,11 +8,12 @@ import {
 interface CardProps {
     data?: string;
     onPress: () => void;
+    key: string;
 }
 
-export function Card({data, onPress} : CardProps){
+export function Card({data, onPress, key} : CardProps){
     return (
-        <Container onPress={onPress}>
+        <Container onPress={onPress} key={key}>
             <Content>{data}</Content>
         </Container>
     );

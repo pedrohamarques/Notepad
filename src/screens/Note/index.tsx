@@ -1,7 +1,7 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import {
     Container,
@@ -19,8 +19,16 @@ interface Props {
     singleNote: string;
 }
 
-export function Note({ singleNote }: Props) {
+interface Params {
+    params: string;
+}
+
+export function Note() {
     const navigation = useNavigation();
+    const routes = useRoute();
+    const notes = routes.params as Params;
+
+    console.log(routes, "pa")
     
 
     function handleDeleteNote() {
@@ -42,7 +50,7 @@ export function Note({ singleNote }: Props) {
             </Header>
 
             <Content>
-                <NoteText>{singleNote}</NoteText>
+                <NoteText>{notes && notes.params}</NoteText>
             </Content>
             <Buttons>
                 <Button

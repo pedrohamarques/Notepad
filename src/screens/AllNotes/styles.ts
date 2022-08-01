@@ -5,31 +5,27 @@ export const Container = styled.View`
     justify-content: flex-start;
     align-items: center;
 
-    background-color: #7a9e9f;
+    background-color: #ECF0F1;
 `;
 
 export const Header = styled.View`
     width: 100%;
     height: 10%;
 
-    background-color: #4f6367;
+    background-color: #2874A6;
     
     align-items: center;
     justify-content: center;
 `;
 
 export const Title = styled.Text`
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-    color: #eef5db;
+    color: #FFFFFF;
 
 `;
 
-export const CardList = styled.View`
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-
+export const CardList = styled.FlatList`
+    width: 90%;
     margin: 8px;
 `;

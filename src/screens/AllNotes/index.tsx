@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Alert, StatusBar } from 'react-native';
+import { Alert, FlatList, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -11,14 +11,15 @@ import {
 } from './styles';
 
 import { Card } from '../../components/Card';
-import { ScrollView } from 'react-native-gesture-handler';
 
-interface Props {
+interface CardProps {
     value: string;
+    keyID: string;
+    location?: string;
 }
 
 export function AllNotes() {
-    const [notes, setNotes] = useState<Props[]>([]);
+    const [notes, setNotes] = useState([]);
     const navigation = useNavigation();
     const dataKey = '@Notepad:notes';
 
@@ -34,8 +35,8 @@ export function AllNotes() {
         }
     }
 
-    function handleOpenCard(card : string) {
-        navigation.navigate("Anotacao", {params: card})
+    function handleOpenCard(card: string, keyID: string, latLocation: number, longLocation: number) {
+        navigation.navigate("Anotacao", { note: card, keyNote: keyID, latLocation: latLocation, longLocation: longLocation })
     }
 
     useFocusEffect(useCallback(() => {
@@ -57,16 +58,14 @@ export function AllNotes() {
             <Header>
                 <Title>Anotações</Title>
             </Header>
-            <ScrollView>
-                <CardList>
-                    { notes && notes.length && notes.map(item => (
-                        <>
-                        <Card data={item} onPress={() => handleOpenCard(item)} key={item} />
-                        </>
-                    ))}
-                </CardList>
-                </ScrollView>
 
+            <CardList 
+            data={notes}
+            keyExtractor={item => item.keyID}
+            renderItem={({ item }) => <Card data={item} onPress={() => handleOpenCard(item.note, item.keyID, item.latLocation, item.longLocation)} />}
+            showsVerticalScrollIndicator={false}
+
+            />
         </Container>
     )
 }

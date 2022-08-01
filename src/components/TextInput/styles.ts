@@ -1,10 +1,6 @@
 import styled, {css} from 'styled-components/native';
 
-interface Props {
-    isFocused: boolean;
-}
-
-export const Container = styled.View<Props>`
+export const Container = styled.View`
     flex: 1;
 
     width: 90%;
@@ -14,15 +10,13 @@ export const Container = styled.View<Props>`
     padding: 8px;
 
     border-width: 1px;
-    border-radius: 5px;
-    border-color: #F2F4F4; 
+    border-radius: 8px;
+    border-color: #B3B6B7; 
 
-    ${({ isFocused }) => isFocused && css`
-    background-color: #7a9e9f;
-  `};
+    background-color: #FDFEFE;
 `;
 
-export const InputText = styled.TextInput<Props>`
+export const InputText = styled.TextInput`
     color: #000000;
     padding: 0 4px;
 

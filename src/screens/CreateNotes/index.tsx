@@ -1,75 +1,68 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Alert, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Geolocation from '@react-native-community/geolocation';
+import uuid from 'react-native-uuid';
+import * as Location from "expo-location";
+import { MaterialIcons } from "@expo/vector-icons";
+
+interface GeoLocalProps {
+    coords: {
+        accuracy: number,
+        altitude: number,
+        altitudeAccuracy: number,
+        heading: number,
+        latitude: number,
+        longitude: number,
+        speed: number,
+    },
+    mocked: boolean,
+    timestamp: number,
+}
 
 import {
     Container,
     Header,
     Title,
     Buttons,
+    LocationView,
+    LocationText
 } from './styles';
 
 import { Button } from '../../components/Button';
 import { TextInput } from '../../components/TextInput';
 
+interface Props {
+    key: string;
+    value: string;
+}
+
 export function CreateNote() {
     const [note, setNote] = useState('');
-    const [currentLatitude, setCurrentLatitude] = useState('');
-    const [currentLongitude, setCurrentLongitude] = useState('');
+    const [location, setLocation] = useState<GeoLocalProps>();
+    const [errorMsg, setErrorMsg] = useState(null);
     const navigation = useNavigation();
     const dataKey = '@Notepad:notes';
 
-    function callLocation () {
-        if (Platform.OS === 'ios') {
-            getLocation();
-        } else {
-            async function requestLocationPermission () {
-                const granted = await PermissionsAndroid.request(
-                    'android.permission.ACCESS_FINE_LOCATION',
-                    {
-                        title: 'Permissão de Acesso à Localização',
-                        message: 'Este aplicativo precisa acessar a sua localização',
-                        buttonNeutral: 'Pergunte-me depois',
-                        buttonNegative: 'Cancelar',
-                        buttonPositive: 'Permitir'
-                    }
-                );
-                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    getLocation();
-                } else {
-                    Alert.alert('Permissão de localização negada');
-                }
-            };
-            requestLocationPermission();
-        }
+    const noteWithKey = {
+        note,
+        keyID: String(uuid.v4()),
+        latLocation: location?.coords.latitude,
+        longLocation:location?.coords.longitude,
     }
 
-    function getLocation () {
-        Geolocation.getCurrentPosition(
-            (position) => {
-                const currentLatitude = JSON.stringify(position.coords.latitude);
-                const currentLongitude = JSON.stringify(position.coords.longitude);
-                setCurrentLatitude(currentLatitude);
-                setCurrentLongitude(currentLongitude);
-            },
-            (error) => alert(error.message),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-        );
-    }
-    
+
     async function handleSaveNote() {
         try {
+
             const data = await AsyncStorage.getItem(dataKey);
             const allNotes = data ? JSON.parse(data) : [];
 
             const allNotesUpdated = [
-                ...allNotes, note
-        ]
-
+                ...allNotes, noteWithKey
+            ]
             await AsyncStorage.setItem(dataKey, JSON.stringify(allNotesUpdated))
-            .then(() => navigation.navigate('Todas as Notas'));
+                .then(() => navigation.navigate('Todas as Notas'));
             setNote('');
 
         } catch (error) {
@@ -91,6 +84,27 @@ export function CreateNote() {
     //     setNote('');
     // },[]))
 
+    useFocusEffect(useCallback(() => {
+        async function getLocation() {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
+                setErrorMsg('Permissão de localização negada');
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+        }
+        getLocation();
+    }, []))
+
+    let text = 'Aguardando..';
+    if (errorMsg) {
+        text = errorMsg;
+    } else if (location) {
+        text = JSON.stringify(location);
+    }
+
 
     return (
         <Container>
@@ -107,9 +121,12 @@ export function CreateNote() {
                 onChangeText={setNote}
                 style={{ fontSize: 18 }}
                 autoFocus
-                selectionColor='#eef5db'
 
             />
+            <LocationView>
+                <MaterialIcons name='map' size={24} style={{color: "#7B7D7D"}}/>
+                <LocationText>{location?.coords.latitude} , {location?.coords.longitude}</LocationText>
+            </LocationView>
 
             <Buttons>
                 <Button

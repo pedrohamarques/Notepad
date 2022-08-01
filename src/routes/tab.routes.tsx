@@ -14,14 +14,14 @@ export function AppRoutes() {
         <Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: '#eef5db',
-                tabBarInactiveTintColor: '#000000',      
-                tabBarActiveBackgroundColor: '#4f6367',
-                tabBarInactiveBackgroundColor: '#4f6367',
+                tabBarActiveTintColor: '#2874A6',
+                tabBarInactiveTintColor: '#95A5A6',      
+                tabBarActiveBackgroundColor: "#FFFFFF",
+                tabBarInactiveBackgroundColor: '#FFFFFF',
                 tabBarLabelPosition: 'beside-icon',
                 tabBarStyle: {
                     height: 68,
-                    paddingVertical: Platform.OS === 'ios' ? 20 : 0,
+                    paddingVertical: Platform.OS === 'ios' ? 20 : 0,                    
                 }
             }}
         >
